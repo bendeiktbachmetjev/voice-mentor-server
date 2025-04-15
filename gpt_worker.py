@@ -8,7 +8,7 @@ def get_coaching_advice(transcript):
     url = 'https://api.openai.com/v1/chat/completions'
     headers = {
         'Authorization': f'Bearer {api_key}',
-    )
+    }
     return response.choices[0].message["content"].strip()
 
 def get_coaching_advice(transcript):
