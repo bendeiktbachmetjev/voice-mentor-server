@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from whisper_worker import transcribe_audio
 from gpt_worker import generate_response
+import traceback
 
 app = Flask(__name__)
 
@@ -26,6 +27,7 @@ def upload_audio():
     except Exception as e:
         # Логирование ошибки для диагностики
         print(f"Error: {str(e)}")
+        print("Traceback:", traceback.format_exc())
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
 if __name__ == "__main__":
