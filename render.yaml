@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: voice-mentor-server
+    name: voice-mentor
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python server.py"
