@@ -4,7 +4,7 @@ import logging
 from werkzeug.utils import secure_filename
 from app.config import Config
 from app.whisper_worker import transcribe_audio
-from app.gpt_worker import generate_response
+from app.gpt_worker import generate_response_with_system_prompt
 
 # Configure logging
 logging.basicConfig(
@@ -60,7 +60,7 @@ def process_audio():
         
         # Generate response
         logger.info("Generating GPT response")
-        response = generate_response(transcript)
+        response = generate_response_with_system_prompt(transcript)
         logger.info("Response generation completed")
         
         # Clean up
