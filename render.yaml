@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: voice-mentor-server
+    env: python
+    region: oregon  # Выберите ближайший к вам регион
+    plan: free  # Или выберите другой план: starter, standard, pro
+    
+    # Настройки сборки
+    buildCommand: |
+      pip install -r requirements.txt
+      python -m pip install --upgrade pip
+      
+    # Команда запуска
+    startCommand: gunicorn app.server:app
+    
+    # Переменные окружения
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: FLASK_APP
+        value: app.server
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: 0
+      - key: SECRET_KEY
+        sync: false  # Не синхронизировать с Git
+      - key: OPENAI_API_KEY
+        sync: false  # Не синхронизировать с Git
+        
+    # Настройки автоматического деплоя
+    autoDeploy: true
+    branch: main  # Ветка для автоматического деплоя
+    
+    # Настройки здоровья приложения
+    healthCheckPath: /health
+    healthCheckTimeout: 30
+    
+    # Настройки масштабирования
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+      
+    # Настройки диска
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1 
