@@ -9,14 +9,15 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       python -m pip install --upgrade pip
+      mkdir -p uploads
       
     # Команда запуска
-    startCommand: gunicorn app.server:app
+    startCommand: gunicorn app.server:app --bind 0.0.0.0:$PORT
     
     # Переменные окружения
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.0
+        value: 3.12.4
       - key: FLASK_APP
         value: app.server
       - key: FLASK_ENV

@@ -1,7 +1,57 @@
-import openai
+from openai import OpenAI
+import os
+from typing import Optional
 from app.config import Config
 
-def generate_response(text, system_prompt="You are a helpful assistant.", temperature=0.7, max_tokens=1000):
+client = OpenAI(api_key=Config.OPENAI_API_KEY)
+
+def generate_response(text: str, temperature: float = 0.7, max_tokens: int = 1000) -> Optional[str]:
+    """
+    Generate response using GPT-3.5
+    
+    Args:
+        text (str): Input text to generate response for
+        temperature (float): Controls randomness (0.0 to 1.0)
+        max_tokens (int): Maximum number of tokens to generate
+        
+    Returns:
+        str: Generated response or None if error occurs
+        
+    Raises:
+        ValueError: If input text is empty, temperature is invalid, or max_tokens is invalid
+    """
+    if not text or not text.strip():
+        raise ValueError("Input text cannot be empty")
+    
+    if not 0 <= temperature <= 1:
+        raise ValueError("Temperature must be between 0 and 1")
+    
+    if max_tokens <= 0:
+        raise ValueError("Max tokens must be greater than 0")
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": text}
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error in response generation: {str(e)}")
+        return None
+
+def generate_response_with_system_prompt(text, system_prompt="""You are a professional speech coach and mentor. Your task is to analyze the user's speech and provide constructive feedback. Focus on:
+
+1. Communication clarity and effectiveness
+2. Speech patterns and habits
+3. Areas for improvement
+4. Specific suggestions for better communication
+
+Provide feedback in a supportive and encouraging manner. Highlight both strengths and areas for growth. Keep your response concise but actionable.""", temperature=0.7, max_tokens=1000):
     """
     Generate response using GPT-3.5
     
@@ -33,27 +83,26 @@ def generate_response(text, system_prompt="You are a helpful assistant.", temper
     
     try:
         # Call GPT-3.5 API
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text}
             ],
             temperature=temperature,
-            max_tokens=max_tokens,
-            api_key=Config.OPENAI_API_KEY
+            max_tokens=max_tokens
         )
         
         # Extract and return the response
         return response.choices[0].message.content.strip()
         
-    except openai.error.AuthenticationError:
+    except openai.AuthenticationError:
         raise Exception("Invalid OpenAI API key")
-    except openai.error.RateLimitError:
+    except openai.RateLimitError:
         raise Exception("Rate limit exceeded. Please try again later")
-    except openai.error.InvalidRequestError as e:
+    except openai.InvalidRequestError as e:
         raise Exception(f"Invalid request to OpenAI API: {str(e)}")
-    except openai.error.APIError as e:
+    except openai.APIError as e:
         raise Exception(f"OpenAI API error: {str(e)}")
     except Exception as e:
         raise Exception(f"Error in response generation: {str(e)}") 

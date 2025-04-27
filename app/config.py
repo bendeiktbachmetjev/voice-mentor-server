@@ -8,6 +8,8 @@ load_dotenv()
 class Config:
     # OpenAI API settings
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    if not OPENAI_API_KEY:
+        raise ValueError("OPENAI_API_KEY environment variable is not set")
     
     # Flask settings
     SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here')

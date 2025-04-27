@@ -1,5 +1,6 @@
 # Environment variables
 .env
+.env.*
 
 # Python
 __pycache__/
@@ -38,10 +39,25 @@ ENV/
 
 # Logs
 *.log
+logs/
 
 # Uploads
 uploads/
+!uploads/.gitkeep
+
+# Test files
 test_files/
+
+# Coverage
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Render
+render.yaml
 
 # PyInstaller
 *.manifest
@@ -52,10 +68,8 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
-htmlcov/
 .tox/
 .nox/
-.coverage
 .coverage.*
 .cache
 nosetests.xml

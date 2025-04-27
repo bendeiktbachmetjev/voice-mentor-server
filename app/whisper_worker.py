@@ -1,8 +1,11 @@
-import openai
+from openai import OpenAI
 import os
+from typing import Optional
 from app.config import Config
 
-def transcribe_audio(audio_file_path):
+client = OpenAI(api_key=Config.OPENAI_API_KEY)
+
+def transcribe_audio(audio_file_path: str) -> str:
     """
     Transcribe audio file using OpenAI Whisper API
     
@@ -14,8 +17,7 @@ def transcribe_audio(audio_file_path):
         
     Raises:
         FileNotFoundError: If audio file doesn't exist
-        ValueError: If API key is not set
-        Exception: For other errors during transcription
+        ValueError: If file is empty, API key is not set, or API error occurs
     """
     # Check if file exists
     if not os.path.exists(audio_file_path):
@@ -30,24 +32,13 @@ def transcribe_audio(audio_file_path):
         raise ValueError("OpenAI API key is not set in environment variables")
     
     try:
-        # Open and read the audio file
-        with open(audio_file_path, "rb") as audio_file:
-            # Call Whisper API
-            transcript = openai.Audio.transcribe(
+        with open(audio_file_path, 'rb') as audio_file:
+            transcription = client.audio.transcriptions.create(
                 model="whisper-1",
-                file=audio_file,
-                api_key=Config.OPENAI_API_KEY,
-                language="en"  # Optional: specify language for better results
+                file=audio_file
             )
-            
-        # Return the transcribed text
-        return transcript["text"]
-        
-    except openai.error.AuthenticationError:
-        raise Exception("Invalid OpenAI API key")
-    except openai.error.RateLimitError:
-        raise Exception("Rate limit exceeded. Please try again later")
-    except openai.error.APIError as e:
-        raise Exception(f"OpenAI API error: {str(e)}")
+            if not transcription.text:
+                raise ValueError("Transcription returned empty text")
+            return transcription.text
     except Exception as e:
-        raise Exception(f"Error in transcription: {str(e)}") 
+        raise ValueError(f"API Error: {str(e)}") 
