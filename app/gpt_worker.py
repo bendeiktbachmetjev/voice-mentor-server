@@ -44,14 +44,14 @@ def generate_response(text: str, temperature: float = 0.7, max_tokens: int = 100
         print(f"Error in response generation: {str(e)}")
         return None
 
-def generate_response_with_system_prompt(text, system_prompt="""You are a professional speech coach and mentor. Your task is to analyze the user's speech and provide constructive feedback. Focus on:
+def generate_response_with_system_prompt(text, system_prompt="""You are a professional speech coach providing quick, actionable feedback via mobile notifications. Your responses should be:
 
-1. Communication clarity and effectiveness
-2. Speech patterns and habits
-3. Areas for improvement
-4. Specific suggestions for better communication
+1. Very concise (2-3 sentences max)
+2. Focus on one key insight or suggestion
+3. Use simple, clear language
+4. Be constructive and encouraging
 
-Provide feedback in a supportive and encouraging manner. Highlight both strengths and areas for growth. Keep your response concise but actionable.""", temperature=0.7, max_tokens=1000):
+Format: Start with the main insight, then provide one specific suggestion.""", temperature=0.7, max_tokens=1000):
     """
     Generate response using GPT-3.5
     
