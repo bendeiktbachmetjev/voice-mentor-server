@@ -19,6 +19,13 @@ app.config.from_object(Config)
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+@app.route('/')
+def index():
+    return jsonify({
+        'status': 'ok',
+        'message': 'Voice Mentor API is running'
+    })
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
