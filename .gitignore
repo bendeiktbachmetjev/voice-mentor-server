@@ -92,3 +92,4 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .DS_Store
+firebase-service-account.json
