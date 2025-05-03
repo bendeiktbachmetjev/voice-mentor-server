@@ -1,10 +1,10 @@
-from openai import OpenAI
+import openai
 from app.config import Config
 import logging
 
 logger = logging.getLogger(__name__)
 
-client = OpenAI(api_key=Config.OPENAI_API_KEY)
+openai.api_key = Config.OPENAI_API_KEY
 
 def transcribe_audio(file_path: str) -> str:
     """
@@ -26,13 +26,13 @@ def transcribe_audio(file_path: str) -> str:
     try:
         with open(file_path, 'rb') as audio_file:
             logger.info(f"Starting transcription for file: {file_path}")
-            response = client.audio.transcriptions.create(
+            response = openai.Audio.transcribe(
                 model="whisper-1",
                 file=audio_file,
                 language=Config.WHISPER_LANGUAGE
             )
             logger.info("Transcription completed successfully")
-            return response.text
+            return response['text']
             
     except Exception as e:
         logger.error(f"Error during transcription: {str(e)}")
