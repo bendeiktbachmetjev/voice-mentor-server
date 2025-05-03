@@ -5,7 +5,6 @@ import logging
 from werkzeug.utils import secure_filename
 from app.config import Config
 from app.whisper_worker import transcribe_audio
-from app.firebase import send_push_notification
 
 # Configure logging
 logging.basicConfig(
@@ -21,9 +20,6 @@ app.config.from_object(Config)
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Храним последний зарегистрированный токен (для одного пользователя)
-fcm_token_store = {'token': None}
-
 @app.route('/')
 def index():
     return jsonify({
@@ -34,17 +30,6 @@ def index():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
-
-@app.route('/register-fcm-token', methods=['POST'])
-def register_fcm_token():
-    data = request.get_json()
-    token = data.get('token')
-    if not token:
-        logger.warning('No token provided in /register-fcm-token')
-        return jsonify({'error': 'No token provided'}), 400
-    fcm_token_store['token'] = token
-    logger.info(f'Registered FCM token: {token}')
-    return jsonify({'status': 'success'})
 
 @app.route('/process-audio', methods=['POST'])
 def process_audio():
@@ -77,15 +62,6 @@ def process_audio():
         # Clean up
         logger.info(f"Cleaning up file: {filepath}")
         os.remove(filepath)
-        
-        # Отправляем push-уведомление, если токен есть
-        token = fcm_token_store.get('token')
-        if token:
-            logger.info(f'Attempting to send push notification to token: {token}')
-            result = send_push_notification(token, "Voice Mentor Transcription", transcript)
-            logger.info(f'Push notification result: {result}')
-        else:
-            logger.warning('No FCM token registered, cannot send push notification')
         
         return jsonify({
             'transcript': transcript
