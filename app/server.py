@@ -63,9 +63,7 @@ def process_audio():
         logger.info(f"Cleaning up file: {filepath}")
         os.remove(filepath)
         
-        return jsonify({
-            'transcript': transcript
-        })
+        return transcript
         
     except Exception as e:
         logger.error(f"Error processing audio: {str(e)}")
