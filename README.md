@@ -1,12 +1,12 @@
 # Voice Mentor API
 
-Backend API для iOS-приложения Voice Mentor, предоставляющего анализ речи и обратную связь по коммуникации.
+Backend API для iOS-приложения Voice Mentor, предоставляющего транскрипцию речи.
 
 ## API Endpoints
 
 ### POST /process-audio
 
-Обрабатывает аудиофайл и возвращает транскрипцию с обратной связью.
+Обрабатывает аудиофайл и возвращает транскрипцию.
 
 **Параметры запроса:**
 - `audio`: Аудиофайл (поддерживаемые форматы: mp3, wav)
@@ -15,14 +15,13 @@ Backend API для iOS-приложения Voice Mentor, предоставля
 **Пример успешного ответа:**
 ```json
 {
-    "transcript": "Текст из аудио",
-    "response": "Краткая обратная связь"
+    "transcript": "Текст из аудио"
 }
 ```
 
 **Пример использования в Swift:**
 ```swift
-func processAudio(audioData: Data) async throws -> (transcript: String, response: String) {
+func processAudio(audioData: Data) async throws -> String {
     let url = URL(string: "https://voice-mentor-server.onrender.com/process-audio")!
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
@@ -48,11 +47,9 @@ func processAudio(audioData: Data) async throws -> (transcript: String, response
     switch httpResponse.statusCode {
     case 200:
         let result = try JSONDecoder().decode(AudioProcessingResult.self, from: data)
-        return (result.transcript, result.response)
+        return result.transcript
     case 400:
         throw APIError.invalidRequest
-    case 404:
-        throw APIError.notFound
     case 500:
         throw APIError.serverError
     default:
@@ -63,7 +60,6 @@ func processAudio(audioData: Data) async throws -> (transcript: String, response
 
 **Коды ошибок:**
 - 400: Неверный формат файла или файл не предоставлен
-- 404: Файл не найден
 - 500: Внутренняя ошибка сервера
 
 ## Локальная разработка

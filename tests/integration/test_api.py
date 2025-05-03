@@ -40,13 +40,9 @@ def test_process_audio_invalid_file_type(client):
         assert b"Invalid file type" in response.data
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
-@patch('app.gpt_worker.client.chat.completions.create')
-def test_process_audio_success(mock_gpt, mock_transcribe, client, temp_audio_file):
-    # Настраиваем моки
+def test_process_audio_success(mock_transcribe, client, temp_audio_file):
+    # Настраиваем мок
     mock_transcribe.return_value.text = "Test transcription"
-    mock_gpt.return_value.choices = [
-        type('Choice', (), {'message': type('Message', (), {'content': "Test GPT response"})})()
-    ]
 
     # Создаем тестовый аудио файл и записываем данные
     with open(temp_audio_file, 'wb') as f:
@@ -67,11 +63,9 @@ def test_process_audio_success(mock_gpt, mock_transcribe, client, temp_audio_fil
     assert response.status_code == 200
     response_data = response.get_json()
     assert response_data['transcript'] == "Test transcription"
-    assert response_data['response'] == "Test GPT response"
 
-    # Проверяем вызовы моков
+    # Проверяем вызов мока
     mock_transcribe.assert_called_once()
-    mock_gpt.assert_called_once()
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
 def test_process_audio_api_error(mock_transcribe, client, temp_audio_file):
@@ -94,6 +88,6 @@ def test_process_audio_api_error(mock_transcribe, client, temp_audio_file):
         )
 
     # Проверяем ответ
-    assert response.status_code == 400
+    assert response.status_code == 500
     response_data = response.get_json()
-    assert response_data['error'] == "API Error: Test API Error" 
+    assert response_data['error'] == "Test API Error" 

@@ -24,11 +24,6 @@ class Config:
     WHISPER_MODEL = os.getenv('WHISPER_MODEL', 'whisper-1')
     WHISPER_LANGUAGE = os.getenv('WHISPER_LANGUAGE', 'en')
     
-    # GPT settings
-    GPT_MODEL = os.getenv('GPT_MODEL', 'gpt-3.5-turbo')
-    GPT_TEMPERATURE = float(os.getenv('GPT_TEMPERATURE', '0.7'))
-    GPT_MAX_TOKENS = int(os.getenv('GPT_MAX_TOKENS', '1000'))
-    
     # Ensure upload folder exists
     @classmethod
     def init_app(cls, app):
@@ -41,10 +36,4 @@ class Config:
             raise ValueError("OPENAI_API_KEY is not set in environment variables")
         
         if not os.path.exists(cls.UPLOAD_FOLDER):
-            os.makedirs(cls.UPLOAD_FOLDER)
-            
-        if not isinstance(cls.GPT_TEMPERATURE, float) or not 0 <= cls.GPT_TEMPERATURE <= 1:
-            raise ValueError("GPT_TEMPERATURE must be a float between 0 and 1")
-            
-        if not isinstance(cls.GPT_MAX_TOKENS, int) or cls.GPT_MAX_TOKENS <= 0:
-            raise ValueError("GPT_MAX_TOKENS must be a positive integer") 
+            os.makedirs(cls.UPLOAD_FOLDER) 
