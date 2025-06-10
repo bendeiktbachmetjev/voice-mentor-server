@@ -15,7 +15,7 @@ def client():
 def temp_audio_file():
     with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as f:
         f.write(b"fake audio data")
-        f.flush()  # Убедимся, что данные записаны на диск
+        f.flush()  # Make sure data is written to disk
         yield f.name
         os.unlink(f.name)
 
@@ -41,15 +41,15 @@ def test_process_audio_invalid_file_type(client):
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
 def test_process_audio_success(mock_transcribe, client, temp_audio_file):
-    # Настраиваем мок
+    # Configure the mock
     mock_transcribe.return_value.text = "Test transcription"
 
-    # Создаем тестовый аудио файл и записываем данные
+    # Create a test audio file and write data
     with open(temp_audio_file, 'wb') as f:
         f.write(b'test audio data')
         f.flush()
 
-    # Отправляем запрос
+    # Send request
     with open(temp_audio_file, 'rb') as f:
         data = {}
         data['audio'] = (f, 'test.mp3', 'audio/mpeg')
@@ -59,25 +59,25 @@ def test_process_audio_success(mock_transcribe, client, temp_audio_file):
             content_type='multipart/form-data'
         )
 
-    # Проверяем ответ
+    # Check response
     assert response.status_code == 200
     response_data = response.get_json()
     assert response_data['transcript'] == "Test transcription"
 
-    # Проверяем вызов мока
+    # Verify mock call
     mock_transcribe.assert_called_once()
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
 def test_process_audio_api_error(mock_transcribe, client, temp_audio_file):
-    # Настраиваем мок для симуляции ошибки API
+    # Configure mock to simulate API error
     mock_transcribe.side_effect = Exception("Test API Error")
 
-    # Создаем тестовый аудио файл и записываем данные
+    # Create a test audio file and write data
     with open(temp_audio_file, 'wb') as f:
         f.write(b'test audio data')
         f.flush()
 
-    # Отправляем запрос
+    # Send request
     with open(temp_audio_file, 'rb') as f:
         data = {}
         data['audio'] = (f, 'test.mp3', 'audio/mpeg')
@@ -87,7 +87,7 @@ def test_process_audio_api_error(mock_transcribe, client, temp_audio_file):
             content_type='multipart/form-data'
         )
 
-    # Проверяем ответ
+    # Check response
     assert response.status_code == 500
     response_data = response.get_json()
     assert response_data['error'] == "Test API Error" 

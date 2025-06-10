@@ -10,7 +10,7 @@ def mock_audio_file():
 @pytest.fixture
 def mock_transcript():
     transcript = MagicMock()
-    transcript.text = "Это тестовая транскрипция"
+    transcript.text = "This is a test transcription"
     return transcript
 
 def test_transcribe_audio_file_not_found():
@@ -19,7 +19,7 @@ def test_transcribe_audio_file_not_found():
             transcribe_audio("non_existent_file.mp3")
 
 def test_transcribe_audio_empty_file(tmp_path):
-    # Создаем пустой файл
+    # Create an empty file
     empty_file = tmp_path / "empty.mp3"
     empty_file.touch()
     
@@ -28,21 +28,21 @@ def test_transcribe_audio_empty_file(tmp_path):
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
 def test_transcribe_audio_success(mock_transcribe):
-    # Настраиваем мок
-    mock_transcribe.return_value = MagicMock(text="Тестовая транскрипция")
+    # Configure the mock
+    mock_transcribe.return_value = MagicMock(text="Test transcription")
     
-    # Создаем временный файл для теста
+    # Create a temporary file for testing
     with patch('os.path.exists', return_value=True), \
          patch('os.path.getsize', return_value=1024), \
          patch('builtins.open', mock_open(read_data=b'test audio data')):
         result = transcribe_audio('test_audio.mp3')
         
-        assert result == "Тестовая транскрипция"
+        assert result == "Test transcription"
         mock_transcribe.assert_called_once()
 
 @patch('app.whisper_worker.client.audio.transcriptions.create')
 def test_transcribe_audio_api_error(mock_transcribe):
-    # Настраиваем мок для вызова исключения
+    # Configure mock to throw an exception
     mock_transcribe.side_effect = Exception("Test API Error")
 
     with patch('os.path.exists', return_value=True), \
