@@ -1,25 +1,25 @@
 # Voice Mentor API
 
-Backend API for iOS Voice Mentor application that provides speech transcription.
+Backend API для iOS-приложения Voice Mentor, предоставляющего транскрипцию речи.
 
 ## API Endpoints
 
 ### POST /process-audio
 
-Processes an audio file and returns the transcription.
+Обрабатывает аудиофайл и возвращает транскрипцию.
 
-**Request Parameters:**
-- `audio`: Audio file (supported formats: mp3, wav)
+**Параметры запроса:**
+- `audio`: Аудиофайл (поддерживаемые форматы: mp3, wav)
 - Content-Type: multipart/form-data
 
-**Example of successful response:**
+**Пример успешного ответа:**
 ```json
 {
-    "transcript": "Text from audio"
+    "transcript": "Текст из аудио"
 }
 ```
 
-**Example usage in Swift:**
+**Пример использования в Swift:**
 ```swift
 func processAudio(audioData: Data) async throws -> String {
     let url = URL(string: "https://voice-mentor-server.onrender.com/process-audio")!
@@ -58,18 +58,18 @@ func processAudio(audioData: Data) async throws -> String {
 }
 ```
 
-**Error Codes:**
-- 400: Invalid file format or file not provided
-- 500: Internal server error
+**Коды ошибок:**
+- 400: Неверный формат файла или файл не предоставлен
+- 500: Внутренняя ошибка сервера
 
-## Local Development
+## Локальная разработка
 
-1. Install dependencies:
+1. Установите зависимости:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Create a `.env` file with environment variables:
+2. Создайте файл `.env` с переменными окружения:
 ```
 OPENAI_API_KEY=your_api_key
 SECRET_KEY=your_secret_key
@@ -77,12 +77,12 @@ FLASK_ENV=development
 FLASK_DEBUG=1
 ```
 
-3. Run the server:
+3. Запустите сервер:
 ```bash
 python -m flask run
 ```
 
-## Testing
+## Тестирование
 
 ```bash
 export OPENAI_API_KEY=test_key && python -m pytest tests/ -v
