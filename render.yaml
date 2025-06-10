@@ -2,19 +2,19 @@ services:
   - type: web
     name: voice-mentor-server
     env: python
-    region: oregon  # Выберите ближайший к вам регион
-    plan: free  # Или выберите другой план: starter, standard, pro
+    region: oregon  # Choose the region closest to you
+    plan: free  # Or choose another plan: starter, standard, pro
     
-    # Настройки сборки
+    # Build settings
     buildCommand: |
       pip install -r requirements.txt
       python -m pip install --upgrade pip
       mkdir -p uploads
       
-    # Команда запуска
+    # Start command
     startCommand: gunicorn app.server:app --bind 0.0.0.0:$PORT
     
-    # Переменные окружения
+    # Environment variables
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.4
@@ -25,24 +25,24 @@ services:
       - key: FLASK_DEBUG
         value: 0
       - key: SECRET_KEY
-        sync: false  # Не синхронизировать с Git
+        sync: false  # Do not synchronize with Git
       - key: OPENAI_API_KEY
-        sync: false  # Не синхронизировать с Git
+        sync: false  # Do not synchronize with Git
         
-    # Настройки автоматического деплоя
+    # Automatic deployment settings
     autoDeploy: true
-    branch: main  # Ветка для автоматического деплоя
+    branch: main  # Branch for automatic deployment
     
-    # Настройки здоровья приложения
+    # Application health settings
     healthCheckPath: /health
     healthCheckTimeout: 30
     
-    # Настройки масштабирования
+    # Scaling settings
     scaling:
       minInstances: 1
       maxInstances: 1
       
-    # Настройки диска
+    # Disk settings
     disk:
       name: uploads
       mountPath: /opt/render/project/src/uploads

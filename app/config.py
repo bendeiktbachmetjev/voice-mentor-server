@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Загрузка переменных окружения из .env файла
+# Loading environment variables from .env file
 load_dotenv()
 
 class Config:
