@@ -69,7 +69,7 @@ def process_audio():
         # Apply VAD to the converted file
         try:
             audio, sample_rate = read_wave(wav_path)
-            vad = webrtcvad.Vad(2)
+            vad = webrtcvad.Vad(3)  # Maximum strictness: less false positives, only clear speech
             frames = frame_generator(30, audio, sample_rate)
             segments = list(vad_collector(sample_rate, 30, 300, vad, frames))
             if segments:
