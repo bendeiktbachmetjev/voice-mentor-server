@@ -98,3 +98,7 @@ export OPENAI_API_KEY=test_key && python -m pytest tests/ -v
 ```bash
 pip install -r requirements.txt
 ```
+
+## Update: Any Audio Format Supported
+
+You can now upload audio in any format (mp3, m4a, m4p, ogg, wav, etc). The server will automatically convert your file to WAV 16kHz mono, apply Voice Activity Detection (VAD), and then transcribe only the speech parts. No need to preprocess your audio manually.
