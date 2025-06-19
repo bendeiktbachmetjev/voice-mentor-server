@@ -5,6 +5,9 @@ import logging
 from werkzeug.utils import secure_filename
 from app.config import Config
 from app.whisper_worker import transcribe_audio
+from app.vad import read_wave, frame_generator, vad_collector, save_wave
+import webrtcvad
+import tempfile
 
 # Configure logging
 logging.basicConfig(
@@ -54,9 +57,30 @@ def process_audio():
         logger.info(f"Saving file to: {filepath}")
         file.save(filepath)
         
-        # Transcribe audio
-        logger.info("Starting audio transcription")
-        transcript = transcribe_audio(filepath)
+        # VAD: если файл wav, 16kHz, моно, прогоняем через VAD
+        if filename.lower().endswith('.wav'):
+            try:
+                audio, sample_rate = read_wave(filepath)
+                vad = webrtcvad.Vad(2)
+                frames = frame_generator(30, audio, sample_rate)
+                segments = list(vad_collector(sample_rate, 30, 300, vad, frames))
+                if segments:
+                    speech_audio = b''.join(segments)
+                    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as vad_out:
+                        save_wave(vad_out.name, speech_audio, sample_rate)
+                        vad_filepath = vad_out.name
+                    logger.info(f"VAD applied, new file: {vad_filepath}")
+                    transcript = transcribe_audio(vad_filepath)
+                    os.remove(vad_filepath)
+                else:
+                    logger.warning("No speech detected by VAD")
+                    return jsonify({'error': 'No speech detected'}), 400
+            except Exception as vad_e:
+                logger.error(f"VAD error: {vad_e}")
+                return jsonify({'error': f'VAD error: {vad_e}'}), 500
+        else:
+            # Для других форматов — как раньше
+            transcript = transcribe_audio(filepath)
         logger.info("Transcription completed successfully")
         
         # Clean up

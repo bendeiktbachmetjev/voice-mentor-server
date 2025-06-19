@@ -87,3 +87,14 @@ python -m flask run
 ```bash
 export OPENAI_API_KEY=test_key && python -m pytest tests/ -v
 ```
+
+## Новое: Voice Activity Detection (VAD)
+
+Если вы отправляете .wav-файл (16kHz, моно), сервер сначала выделяет только участки с речью (VAD), а потом уже распознаёт их. Это помогает убрать тишину и шумы.
+
+## Зависимости
+
+Вам нужен пакет webrtcvad:
+```bash
+pip install -r requirements.txt
+```
